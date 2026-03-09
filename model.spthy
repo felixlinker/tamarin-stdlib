@@ -1,0 +1,10 @@
+// TODO: Rename
+theory Protocol
+begin
+
+// This is an example of how an integration of a library component could look
+// like
+#define SEC_CHAN_FWD_SEC
+#include "protocols/sec-chan.splib"
+
+end
