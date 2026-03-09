@@ -1,0 +1,25 @@
+functions: client_secret/1, server_secret/1, client_enc/2, client_dec/2, server_dec/2, server_enc/2
+
+equations:
+  client_dec(server_dec(m, server_secret(k)), client_secret(k)) = m,
+  server_enc(server_dec(m, client_secret(k)), server_secret(k)) = m
+
+rule SEC_CHAN_NewSession:
+  [ Fr(~sessionKey) ]
+  --[ SEC_CHAN_SessionWith($S) ]->
+  [ SEC_CHAN_ClientSession($S, client_secret(~sessionKey)), SEC_CHAN_ServerSession($S, server_secret(~sessionKey)) ]
+
+rule SEC_CHAN_NewSessionAdversary:
+  [ In(~sessionKey) ]
+  -->
+  [ SEC_CHAN_ServerSession($S, ~sessionKey) ]
+
+#ifdef SEC_CHAN_SERVERCOMPROMISE
+rule SEC_CHAN_ServerCompromise:
+  [ In(~sessionKey) ]
+  --[ ServerCompromise($S) ]->
+  [ SEC_CHAN_ClientSession($S, ~sessionKey) ]
+
+restriction SEC_CHAN_ForwardSecrecy:
+  "All s #t1 #t2. SEC_CHAN_SessionWith(s) @ #t1 & ServerCompromise(s) @ #t2 ==> #t1 < #t2"
+#endif

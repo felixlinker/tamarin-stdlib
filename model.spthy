@@ -4,7 +4,7 @@ begin
 
 // This is an example of how an integration of a library component could look
 // like
-#define SEC_CHAN_FWD_SEC
+#define SEC_CHAN_SERVERCOMPROMISE
 #include "protocols/sec-chan.splib"
 
 end
