@@ -9,17 +9,14 @@ rule SEC_CHAN_NewSession:
   --[ SEC_CHAN_SessionWith($S) ]->
   [ SEC_CHAN_ClientSession($S, client_secret(~sessionKey)), SEC_CHAN_ServerSession($S, server_secret(~sessionKey)) ]
 
-rule SEC_CHAN_NewSessionAdversary:
-  [ In(~sessionKey) ]
+rule SEC_CHAN_ClientCompromise:
+  [ SEC_CHAN_ClientSession($S, client_secret(~sessionKey)) ]
   -->
-  [ SEC_CHAN_ServerSession($S, ~sessionKey) ]
+  [ Out(client_secret(~sessionKey)) ]
 
 #ifdef SEC_CHAN_SERVERCOMPROMISE
 rule SEC_CHAN_ServerCompromise:
-  [ In(~sessionKey) ]
-  --[ ServerCompromise($S) ]->
-  [ SEC_CHAN_ClientSession($S, ~sessionKey) ]
-
-restriction SEC_CHAN_ForwardSecrecy:
-  "All s #t1 #t2. SEC_CHAN_SessionWith(s) @ #t1 & ServerCompromise(s) @ #t2 ==> #t1 < #t2"
+  [ SEC_CHAN_ServerSession($S, server_secret(~sessionKey)) ]
+  --[ ServerCompromise($S)]->
+  [ Out(server_secret(~sessionKey)) ]
 #endif
